@@ -119,7 +119,7 @@ class Predict(object):
     def get_tensor(self, fn):
         # load audio
         if self.dataset == 'mtat':
-            npy_path = os.path.join(self.data_path, 'mtat', 'npy', fn.split('/')[1][:-3]) + 'npy'
+            npy_path = os.path.join(self.data_path, 'mtat', 'npy', fn.split('/')[-1][:-3]) + 'npy'
         elif self.dataset == 'msd':
             msid = fn.decode()
             filename = '{}/{}/{}/{}.npy'.format(msid[2], msid[3], msid[4], msid)
@@ -137,63 +137,29 @@ class Predict(object):
             x[i] = torch.Tensor(raw[i*hop:i*hop+self.input_length]).unsqueeze(0)
         return x
 
-    def get_auc(self, est_array, gt_array):
-        roc_aucs  = metrics.roc_auc_score(gt_array, est_array, average='macro')
-        pr_aucs = metrics.average_precision_score(gt_array, est_array, average='macro')
-        return roc_aucs, pr_aucs
-
-    def test(self):
-        roc_auc, pr_auc, loss = self.get_test_score()
-        print('loss: %.4f' % loss)
-        print('roc_auc: %.4f' % roc_auc)
-        print('pr_auc: %.4f' % pr_auc)
-
-    def get_test_score(self):
+    def predict(self):
         self.model = self.model.eval()
         est_array = []
         gt_array = []
         losses = []
         reconst_loss = nn.BCELoss()
         for line in tqdm.tqdm(self.test_list):
-            if self.dataset == 'mtat':
-                ix, fn = line.split('\t')
-            elif self.dataset == 'msd':
-                fn = line
-                if fn.decode() in skip_files:
-                    continue
-            elif self.dataset == 'jamendo':
-                fn = line
-
+            fn = "/content/mp3/antwoord.mp3"
             # load and split
             x = self.get_tensor(fn)
 
-            # ground truth
-            if self.dataset == 'mtat':
-                ground_truth = self.binary[int(ix)]
-            elif self.dataset == 'msd':
-                ground_truth = self.id2tag[fn].flatten()
-            elif self.dataset == 'jamendo':
-                ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
-
             # forward
             x = self.to_var(x)
-            y = torch.tensor([ground_truth.astype('float32') for i in range(self.batch_size)]).cuda()
             out = self.model(x)
-            loss = reconst_loss(out, y)
-            losses.append(float(loss.data))
             out = out.detach().cpu()
 
             # estimate
             estimated = np.array(out).mean(axis=0)
             est_array.append(estimated)
-            gt_array.append(ground_truth)
 
-        est_array, gt_array = np.array(est_array), np.array(gt_array)
-        loss = np.mean(losses)
+        est_array = np.array(est_array)
 
-        roc_auc, pr_auc = self.get_auc(est_array, gt_array)
-        return roc_auc, pr_auc, loss
-
+        return est_array
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -209,10 +175,7 @@ if __name__ == '__main__':
     config = parser.parse_args()
 
     p = Predict(config)
-    p.test()
-
-
-
-
-
-
+    
+    est_array = p.predict()
+    np.save("asd.npy",est_array)
+    print(est_array)
