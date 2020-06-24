@@ -5,7 +5,6 @@ import librosa
 import fire
 import tqdm
 
-
 class Processor:
 	def __init__(self):
 		self.fs = 16000
@@ -21,8 +20,10 @@ class Processor:
 
 	def iterate(self, data_path):
 		self.create_paths(data_path)
-		self.files = os.listdir(os.path.join(data_path,"mp3"))
+		mp3_path = os.path.join(data_path,"mp3")
+		self.files = os.listdir(mp3_path)
 		for fn in tqdm.tqdm(self.files):
+			fn = os.path.join(mp3_path,fn)
 			npy_fn = os.path.join(self.npy_path, fn.split('/')[-1][:-3]+'npy')
 			if not os.path.exists(npy_fn):
 				try:
