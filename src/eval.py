@@ -23,20 +23,6 @@ import model as Model
 
 TAGS = ['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrument---synthesizer', 'genre---atmospheric', 'genre---indie', 'instrument---electricpiano', 'genre---newage', 'instrument---strings', 'instrument---drums', 'instrument---drummachine', 'genre---techno', 'instrument---guitar', 'genre---alternative', 'genre---easylistening', 'genre---instrumentalpop', 'genre---chillout', 'genre---metal', 'mood/theme---happy', 'genre---lounge', 'genre---reggae', 'genre---popfolk', 'genre---orchestral', 'instrument---acousticguitar', 'genre---poprock', 'instrument---piano', 'genre---trance', 'genre---dance', 'instrument---electricguitar', 'genre---soundtrack', 'genre---house', 'genre---hiphop', 'genre---classical', 'mood/theme---energetic', 'genre---electronic', 'genre---world', 'genre---experimental', 'instrument---violin', 'genre---folk', 'mood/theme---emotional', 'instrument---voice', 'instrument---keyboard', 'genre---pop', 'instrument---bass', 'instrument---computer', 'mood/theme---film', 'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing']
 
-def read_file(tsv_file):
-    tracks = {}
-    with open(tsv_file) as fp:
-        reader = csv.reader(fp, delimiter='\t')
-        next(reader, None)  # skip header
-        for row in reader:
-            track_id = row[0]
-            tracks[track_id] = {
-                'path': row[3].replace('.mp3', '.npy'),
-                'tags': row[5:],
-            }
-    return tracks
-
-
 class Predict(object):
     def __init__(self, config):
         self.model_type = config.model_type
@@ -46,7 +32,7 @@ class Predict(object):
         self.batch_size = config.batch_size
         self.is_cuda = torch.cuda.is_available()
         self.build_model()
-        self.get_dataset()
+        self.input_file = config.input_file
 
     def get_model(self):
         if self.model_type == 'fcn':
@@ -89,22 +75,6 @@ class Predict(object):
         # load model
         self.load(self.model_load_path)
 
-    def get_dataset(self):
-        if self.dataset == 'mtat':
-            self.test_list = np.load('./../split/mtat/test.npy')
-            self.binary = np.load('./../split/mtat/binary.npy')
-        if self.dataset == 'msd':
-            test_file = os.path.join('./../split/msd','filtered_list_test.cP')
-            test_list = pickle.load(open(test_file,'rb'), encoding='bytes')
-            self.test_list = [value for value in test_list if value.decode() not in skip_files]
-            id2tag_file = os.path.join('./../split/msd', 'msd_id_to_tag_vector.cP')
-            self.id2tag = pickle.load(open(id2tag_file,'rb'), encoding='bytes')
-        if self.dataset == 'jamendo':
-            test_file = os.path.join('./../split/mtg-jamendo', 'autotagging_top50tags-test.tsv')
-            self.file_dict= read_file(test_file)
-            self.test_list= list(self.file_dict.keys())
-            self.mlb = LabelBinarizer().fit(TAGS)
-
     def load(self, filename):
         S = torch.load(filename)
         if 'spec.mel_scale.fb' in S.keys():
@@ -143,23 +113,19 @@ class Predict(object):
         gt_array = []
         losses = []
         reconst_loss = nn.BCELoss()
-        for line in tqdm.tqdm(self.test_list):
-            fn = "/content/mp3/antwoord.mp3"
-            # load and split
-            x = self.get_tensor(fn)
 
-            # forward
-            x = self.to_var(x)
-            out = self.model(x)
-            out = out.detach().cpu()
+        fn = self.input_file
 
-            # estimate
-            estimated = np.array(out).mean(axis=0)
-            est_array.append(estimated)
+        x = self.get_tensor(fn)
 
-        est_array = np.array(est_array)
+        # forward
+        x = self.to_var(x)
+        out = self.model(x)
+        out = out.detach().cpu()
 
-        return est_array
+        # estimate
+        prediction = np.array(out).mean(axis=0)
+        return prediction
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -171,11 +137,14 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--model_load_path', type=str, default='.')
     parser.add_argument('--data_path', type=str, default='./data')
+    parser.add_argument('--input_file', type=str, default='./data/mp3/antwoord.mp3')
 
     config = parser.parse_args()
 
     p = Predict(config)
-    
-    est_array = p.predict()
-    np.save("asd.npy",est_array)
-    print(est_array)
+
+    prediction = p.predict()
+    np.save("prediction.npy",prediction)
+    prediction = sorted(zip(TAGS,list(prediction)),key=lambda x:x[1],reverse=True)
+    for tag, value in prediction:
+        print(tag,value)
