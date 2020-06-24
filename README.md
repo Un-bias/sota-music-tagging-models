@@ -16,9 +16,6 @@ PyTorch implementation of state-of-the-art music tagging models :notes:
 - If you want a simple but the best performing model: Short-chunk CNN with Residual connection (so-called *vgg*-ish model with a small receptive field)
 - If you want the best performance with generalization ability: Harmonic CNN
 
-
-
-
 ## Available Models
 - **FCN** : Automatic Tagging using Deep Convolutional Neural Networks, Choi et al., 2016 [[arxiv](https://arxiv.org/abs/1606.00298)]
 - **Musicnn** : End-to-end Learning for Music Audio Tagging at Scale, Pons et al., 2018 [[arxiv](https://arxiv.org/abs/1711.02520)]
@@ -42,20 +39,17 @@ pip install -r requirements.txt
 ## Preprocessing
 STFT will be done on-the-fly. You only need to read and resample audio files into `.npy` files. 
 
-`cd preprocessing/`
-
-`python -u mtat_read.py run YOUR_DATA_PATH`
+`python -u src/preprocessing.py run data`
 
 ## Training
 
-`cd training/`
+`cd src/`
 
 `python -u main.py --data_path YOUR_DATA_PATH`
 
 Options
 
 ```
-'--num_workers', type=int, default=0
 '--dataset', type=str, default='mtat', choices=['mtat', 'msd', 'jamendo']
 '--model_type', type=str, default='fcn',
 				choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'short', 'short_res', 'attention', 'hcnn']
@@ -70,9 +64,8 @@ Options
 ```
 
 ## Evaluation
-`cd training/`
 
-`python -u eval.py --data_path YOUR_DATA_PATH`
+`python -u src/eval.py --model_load_path models/jamendo/fcn/best_model.pth --data_path data --input_file=data/mp3/reggae.mp3`
 
 Options
 
@@ -85,17 +78,6 @@ Options
 '--model_load_path', type=str, default='.'
 '--data_path', type=str, default='./data'
 ```
-
-## Performance Comparison
-Performances of SOTA models
-
-<figure><img src="figs/performance.png" width="550">
-
-Performances with perturbed inputs
-
-<img src="figs/generalization.png" width="550">
-
-
 
 ## Citation
 ```
@@ -131,7 +113,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
-
 
 ## Upcoming Models
 Available upon request.
