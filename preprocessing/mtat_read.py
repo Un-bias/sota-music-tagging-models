@@ -10,18 +10,18 @@ class Processor:
 	def __init__(self):
 		self.fs = 16000
 
-	def get_paths(self, data_path):
-		self.files = glob.glob(os.path.join(data_path, 'mtat', 'mp3', '*/*.mp3'))
+	def create_paths(self, data_path):
 		self.npy_path = os.path.join(data_path, 'mtat', 'npy')
 		if not os.path.exists(self.npy_path):
 			os.makedirs(self.npy_path)
 
 	def get_npy(self, fn):
-                x, sr = librosa.core.load(fn, sr=self.fs)
+		x, sr = librosa.core.load(fn, sr=self.fs)
 		return x
 
 	def iterate(self, data_path):
-		self.get_paths(data_path)
+		self.create_paths(data_path)
+		self.files = os.listdir(os.path.join(data_path,"mp3"))
 		for fn in tqdm.tqdm(self.files):
 			npy_fn = os.path.join(self.npy_path, fn.split('/')[-1][:-3]+'npy')
 			if not os.path.exists(npy_fn):
