@@ -20,4 +20,4 @@ termcolor==1.1.0
 torch==1.2.0
 torchaudio==0.3.0
 tqdm==4.40.0
-
+pydub
