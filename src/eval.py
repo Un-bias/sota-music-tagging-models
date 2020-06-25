@@ -1,150 +1,116 @@
 # coding: utf-8
-import os
-import time
-import numpy as np
-import pandas as pd
-import datetime
-import tqdm
-import csv
-import fire
-import argparse
-import pickle
-from sklearn import metrics
-import pandas as pd
-
+import librosa
+from pydub import AudioSegment
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
-from solver import skip_files
-from sklearn.preprocessing import LabelBinarizer
-
 import model as Model
-
+import numpy as np
+import pandas as pd
+import os
 
 TAGS = ['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrument---synthesizer', 'genre---atmospheric', 'genre---indie', 'instrument---electricpiano', 'genre---newage', 'instrument---strings', 'instrument---drums', 'instrument---drummachine', 'genre---techno', 'instrument---guitar', 'genre---alternative', 'genre---easylistening', 'genre---instrumentalpop', 'genre---chillout', 'genre---metal', 'mood/theme---happy', 'genre---lounge', 'genre---reggae', 'genre---popfolk', 'genre---orchestral', 'instrument---acousticguitar', 'genre---poprock', 'instrument---piano', 'genre---trance', 'genre---dance', 'instrument---electricguitar', 'genre---soundtrack', 'genre---house', 'genre---hiphop', 'genre---classical', 'mood/theme---energetic', 'genre---electronic', 'genre---world', 'genre---experimental', 'instrument---violin', 'genre---folk', 'mood/theme---emotional', 'instrument---voice', 'instrument---keyboard', 'genre---pop', 'instrument---bass', 'instrument---computer', 'mood/theme---film', 'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing']
 
-class Predict(object):
-    def __init__(self, config):
-        self.model_type = config.model_type
-        self.model_load_path = config.model_load_path
-        self.dataset = config.dataset
-        self.data_path = config.data_path
-        self.batch_size = config.batch_size
-        self.is_cuda = torch.cuda.is_available()
-        self.build_model()
-        self.input_file = config.input_file
+def get_model(model_type):
+    if model_type == 'fcn':
+        input_length = 29 * 16000
+        model = Model.FCN()
+    elif model_type == 'musicnn':
+        input_length = 3 * 16000
+        model = Model.Musicnn(dataset=self.dataset)
+    elif model_type == 'crnn':
+        input_length = 29 * 16000
+        model = Model.CRNN()
+    elif model_type == 'sample':
+        input_length = 59049
+        model = Model.SampleCNN()
+    elif model_type == 'se':
+        input_length = 59049
+        model = Model.SampleCNNSE()
+    elif model_type == 'boc':
+        input_length = 59049
+        model = Model.BoCCNN()
+    elif model_type == 'boc_res':
+        input_length = 59049
+        model = Model.BoCCNN_Res()
+    elif model_type == 'attention':
+        input_length = 15 * 16000
+        model = Model.CNNSA()
+    elif model_type == 'hcnn':
+        input_length = 5 * 16000
+        model = Model.HarmonicCNN()
+    else:
+        raise Exception('model_type has to be one of [fcn, musicnn, crnn, sample, se, boc, boc_res, attention]')
+    return model, input_length
 
-    def get_model(self):
-        if self.model_type == 'fcn':
-            self.input_length = 29 * 16000
-            return Model.FCN()
-        elif self.model_type == 'musicnn':
-            self.input_length = 3 * 16000
-            return Model.Musicnn(dataset=self.dataset)
-        elif self.model_type == 'crnn':
-            self.input_length = 29 * 16000
-            return Model.CRNN()
-        elif self.model_type == 'sample':
-            self.input_length = 59049
-            return Model.SampleCNN()
-        elif self.model_type == 'se':
-            self.input_length = 59049
-            return Model.SampleCNNSE()
-        elif self.model_type == 'boc':
-            self.input_length = 59049
-            return Model.BoCCNN()
-        elif self.model_type == 'boc_res':
-            self.input_length = 59049
-            return Model.BoCCNN_Res()
-        elif self.model_type == 'attention':
-            self.input_length = 15 * 16000
-            return Model.CNNSA()
-        elif self.model_type == 'hcnn':
-            self.input_length = 5 * 16000
-            return Model.HarmonicCNN()
-        else:
-            print('model_type has to be one of [fcn, musicnn, crnn, sample, se, boc, boc_res, attention]')
+def load(model, filename):
+    S = torch.load(filename)
+    if 'spec.mel_scale.fb' in S.keys():
+        model.spec.mel_scale.fb = S['spec.mel_scale.fb']
+    model.load_state_dict(S)
 
-    def build_model(self):
-        self.model = self.get_model()
+def build_model(model_type,model_load_path):
+    model, input_length = get_model(model_type)
+    # cuda
+    model.cuda()
+    # load model
+    load(model, model_load_path)
+    return model, input_length
 
-        # cuda
-        if self.is_cuda:
-            self.model.cuda()
+def to_var(x):
+    if torch.cuda.is_available():
+        x = x.cuda()
+    return Variable(x)
 
-        # load model
-        self.load(self.model_load_path)
+fs = 16000
+def normalize(fn,output_file):
+    audio = AudioSegment.from_file(fn)
+    audio = audio.set_frame_rate(fs)
+    audio.export(output_file, format="mp3")
 
-    def load(self, filename):
-        S = torch.load(filename)
-        if 'spec.mel_scale.fb' in S.keys():
-            self.model.spec.mel_scale.fb = S['spec.mel_scale.fb']
-        self.model.load_state_dict(S)
+def get_npy(fn):
+    x, sr = librosa.core.load(fn, sr=fs)
+    return x
 
-    def to_var(self, x):
-        if torch.cuda.is_available():
-            x = x.cuda()
-        return Variable(x)
+def get_tensor(fn, input_length, batch_size):
+    raw = get_npy(fn)
+    length = len(raw)
+    hop = (length - input_length) // batch_size
+    x = torch.zeros(batch_size, input_length)
+    for i in range(batch_size):
+        x[i] = torch.Tensor(raw[i*hop:i*hop+input_length]).unsqueeze(0)
+    return x
 
-    def get_tensor(self, fn):
-        # load audio
-        if self.dataset == 'mtat':
-            npy_path = os.path.join(self.data_path, 'mtat', 'npy', fn.split('/')[-1][:-3]) + 'npy'
-        elif self.dataset == 'msd':
-            msid = fn.decode()
-            filename = '{}/{}/{}/{}.npy'.format(msid[2], msid[3], msid[4], msid)
-            npy_path = os.path.join(self.data_path, filename)
-        elif self.dataset == 'jamendo':
-            filename = self.file_dict[fn]['path']
-            npy_path = os.path.join(self.data_path, filename)
-        raw = np.load(npy_path, mmap_mode='r')
+def predict(model_type,fn, batch_size, model_load_path):
+    model, input_length = build_model(model_type,model_load_path)
+    model = model.eval()
+    est_array = []
+    gt_array = []
+    losses = []
+    reconst_loss = nn.BCELoss()
 
-        # split chunk
-        length = len(raw)
-        hop = (length - self.input_length) // self.batch_size
-        x = torch.zeros(self.batch_size, self.input_length)
-        for i in range(self.batch_size):
-            x[i] = torch.Tensor(raw[i*hop:i*hop+self.input_length]).unsqueeze(0)
-        return x
+    x = get_tensor(fn, input_length, batch_size)
 
-    def predict(self):
-        self.model = self.model.eval()
-        est_array = []
-        gt_array = []
-        losses = []
-        reconst_loss = nn.BCELoss()
+    # forward
+    x = to_var(x)
+    out = model(x)
+    out = out.detach().cpu()
 
-        fn = self.input_file
+    # estimate
+    prediction = np.array(out).mean(axis=0)
+    return prediction
 
-        x = self.get_tensor(fn)
-
-        # forward
-        x = self.to_var(x)
-        out = self.model(x)
-        out = out.detach().cpu()
-
-        # estimate
-        prediction = np.array(out).mean(axis=0)
-        return prediction
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    batch_size=16
+    dataset='jamendo' # choices=['mtat', 'msd', 'jamendo']
+    model_type='fcn' # choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'boc', 'boc_res', 'attention', 'hcnn']
+    model_load_path='../models/jamendo/fcn/best_model.pth'
+    input_file="/content/temp.m4a"
 
-    parser.add_argument('--num_workers', type=int, default=0)
-    parser.add_argument('--dataset', type=str, default='mtat', choices=['mtat', 'msd', 'jamendo'])
-    parser.add_argument('--model_type', type=str, default='fcn',
-                        choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'boc', 'boc_res', 'attention', 'hcnn'])
-    parser.add_argument('--batch_size', type=int, default=16)
-    parser.add_argument('--model_load_path', type=str, default='.')
-    parser.add_argument('--data_path', type=str, default='./data')
-    parser.add_argument('--input_file', type=str, default='./data/mp3/antwoord.mp3')
+    #load_remote_file(handle, audio_file_path)
+    normalize(input_file,input_file.replace(".m4a","mp3"))
+    prediction = predict(model_type,input_file.replace(".m4a","mp3"), batch_size, model_load_path)
 
-    config = parser.parse_args()
-
-    p = Predict(config)
-
-    prediction = p.predict()
-    np.save("prediction.npy",prediction)
-    prediction = sorted(zip(TAGS,list(prediction)),key=lambda x:x[1],reverse=True)
-    for tag, value in prediction:
-        print(tag,value)
+    jamendo_df = pd.DataFrame([list(prediction)],columns=TAGS)
+    print(jamendo_df)
