@@ -100,10 +100,9 @@ def predict(model_type,fn, batch_size, model_load_path):
     prediction = np.array(out).mean(axis=0)
     return prediction
 
-def run(input_file):
-  batch_size=16
-  dataset='mtat' # choices=['mtat', 'msd', 'jamendo']
-  model_type='fcn' # choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'boc', 'boc_res', 'attention', 'hcnn']
+def run(input_file, dataset='mtat', model_type='fcn',batch_size=16):
+  # dataset choices=['mtat', 'msd', 'jamendo']
+  # model_type choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'boc', 'boc_res', 'attention', 'hcnn']
   model_load_path=f'../models/{dataset}/{model_type}/best_model.pth'
 
   #load_remote_file(handle, audio_file_path)
@@ -113,5 +112,5 @@ def run(input_file):
   return pd.DataFrame([list(prediction)],columns=TAGS)
 
 if __name__ == '__main__':
-    output = run("/content/temp.m4a")
+    output = run("data/mp3/reggae.mp3")
     print(output)
