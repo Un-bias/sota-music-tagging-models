@@ -100,17 +100,18 @@ def predict(model_type,fn, batch_size, model_load_path):
     prediction = np.array(out).mean(axis=0)
     return prediction
 
+def run(input_file):
+  batch_size=16
+  dataset='mtat' # choices=['mtat', 'msd', 'jamendo']
+  model_type='fcn' # choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'boc', 'boc_res', 'attention', 'hcnn']
+  model_load_path=f'../models/{dataset}/{model_type}/best_model.pth'
+
+  #load_remote_file(handle, audio_file_path)
+  normalize(input_file,"temp.mp3")
+  prediction = predict(model_type,"temp.mp3", batch_size, model_load_path)
+
+  return pd.DataFrame([list(prediction)],columns=TAGS)
 
 if __name__ == '__main__':
-    batch_size=16
-    dataset='jamendo' # choices=['mtat', 'msd', 'jamendo']
-    model_type='fcn' # choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'boc', 'boc_res', 'attention', 'hcnn']
-    model_load_path='../models/jamendo/fcn/best_model.pth'
-    input_file="/content/temp.m4a"
-
-    #load_remote_file(handle, audio_file_path)
-    normalize(input_file,input_file.replace(".m4a","mp3"))
-    prediction = predict(model_type,input_file.replace(".m4a","mp3"), batch_size, model_load_path)
-
-    jamendo_df = pd.DataFrame([list(prediction)],columns=TAGS)
-    print(jamendo_df)
+    output = run("/content/temp.m4a")
+    print(output)
