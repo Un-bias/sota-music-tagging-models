@@ -129,6 +129,13 @@ class Predict(object):
             self.test_list= list(self.file_dict.keys())
             self.mlb = LabelBinarizer().fit(TAGS)
 
+        if self.dataset == 'jamendo-mood':
+            test_file = os.path.join('./../split/mtg-jamendo-mood', 'autotagging_moodtheme-test.tsv')
+            self.file_dict= read_file(test_file)
+            self.test_list= list(self.file_dict.keys())
+            self.mlb = LabelBinarizer().fit(TAGS)
+
+            
     def load(self, filename):
         S = torch.load(filename)
         self.model.load_state_dict(S)
@@ -147,6 +154,9 @@ class Predict(object):
             filename = '{}/{}/{}/{}.npy'.format(msid[2], msid[3], msid[4], msid)
             npy_path = os.path.join(self.data_path, filename)
         elif self.dataset == 'jamendo':
+            filename = self.file_dict[fn]['path']
+            npy_path = os.path.join(self.data_path, filename)
+        elif self.dataset == 'jamendo-mood':
             filename = self.file_dict[fn]['path']
             npy_path = os.path.join(self.data_path, filename)
         raw = np.load(npy_path, mmap_mode='r')
@@ -260,6 +270,8 @@ class Predict(object):
                     continue
             elif self.dataset == 'jamendo':
                 fn = line
+            elif self.dataset == 'jamendo-mood':
+                fn = line
 
             # load and split
             x = self.get_tensor(fn)
@@ -270,6 +282,8 @@ class Predict(object):
             elif self.dataset == 'msd':
                 ground_truth = self.id2tag[fn].flatten()
             elif self.dataset == 'jamendo':
+                ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
+            elif self.dataset == 'jamendo-mood':
                 ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
 
             # forward
@@ -296,7 +310,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--num_workers', type=int, default=0)
-    parser.add_argument('--dataset', type=str, default='mtat', choices=['mtat', 'msd', 'jamendo'])
+    parser.add_argument('--dataset', type=str, default='mtat', choices=['mtat', 'msd', 'jamendo','jamendo-mood'])
     parser.add_argument('--model_type', type=str, default='fcn',
                         choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'short', 'short_res', 'attention', 'hcnn'])
     parser.add_argument('--batch_size', type=int, default=16)
