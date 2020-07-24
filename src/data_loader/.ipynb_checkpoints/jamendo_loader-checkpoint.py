@@ -6,9 +6,9 @@ import numpy as np
 from torch.utils import data
 from sklearn.preprocessing import LabelBinarizer
 
-META_PATH = './../split/mtg-jamendo-mood/'
+META_PATH = './../split/mtg-jamendo/'
 
-TAGS = ["mood/theme---action", "mood/theme---adventure", "mood/theme---advertising", "mood/theme---background", "mood/theme---ballad", "mood/theme---calm", "mood/theme---children", "mood/theme---christmas", "mood/theme---commercial", "mood/theme---cool", "mood/theme---corporate", "mood/theme---dark", "mood/theme---deep", "mood/theme---documentary", "mood/theme---drama", "mood/theme---dramatic", "mood/theme---dream", "mood/theme---emotional", "mood/theme---energetic", "mood/theme---epic", "mood/theme---fast", "mood/theme---film", "mood/theme---fun", "mood/theme---funny", "mood/theme---game", "mood/theme---groovy", "mood/theme---happy", "mood/theme---heavy", "mood/theme---holiday", "mood/theme---hopeful", "mood/theme---inspiring", "mood/theme---love", "mood/theme---meditative", "mood/theme---melancholic", "mood/theme---melodic", "mood/theme---motivational", "mood/theme---movie", "mood/theme---nature", "mood/theme---party", "mood/theme---positive", "mood/theme---powerful", "mood/theme---relaxing", "mood/theme---retro", "mood/theme---romantic", "mood/theme---sad", "mood/theme---sexy", "mood/theme---slow", "mood/theme---soft", "mood/theme---soundscape", "mood/theme---space", "mood/theme---sport", "mood/theme---summer", "mood/theme---trailer", "mood/theme---travel", "mood/theme---upbeat", "mood/theme---uplifting"]
+TAGS = ['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrument---synthesizer', 'genre---atmospheric', 'genre---indie', 'instrument---electricpiano', 'genre---newage', 'instrument---strings', 'instrument---drums', 'instrument---drummachine', 'genre---techno', 'instrument---guitar', 'genre---alternative', 'genre---easylistening', 'genre---instrumentalpop', 'genre---chillout', 'genre---metal', 'mood/theme---happy', 'genre---lounge', 'genre---reggae', 'genre---popfolk', 'genre---orchestral', 'instrument---acousticguitar', 'genre---poprock', 'instrument---piano', 'genre---trance', 'genre---dance', 'instrument---electricguitar', 'genre---soundtrack', 'genre---house', 'genre---hiphop', 'genre---classical', 'mood/theme---energetic', 'genre---electronic', 'genre---world', 'genre---experimental', 'instrument---violin', 'genre---folk', 'mood/theme---emotional', 'instrument---voice', 'instrument---keyboard', 'genre---pop', 'instrument---bass', 'instrument---computer', 'mood/theme---film', 'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing']
 
 def read_file(tsv_file):
     tracks = {}
@@ -38,15 +38,15 @@ class AudioFolder(data.Dataset):
     def get_songlist(self):
         self.mlb = LabelBinarizer().fit(TAGS)
         if self.split == 'TRAIN':
-            train_file = os.path.join(META_PATH, 'autotagging_moodtheme-train.tsv')
+            train_file = os.path.join(META_PATH, 'autotagging_top50tags-train.tsv')
             self.file_dict = read_file(train_file)
             self.fl = list(self.file_dict.keys())
         elif self.split == 'VALID':
-            train_file = os.path.join(META_PATH,'autotagging_moodtheme-validation.tsv')
+            train_file = os.path.join(META_PATH,'autotagging_top50tags-validation.tsv')
             self.file_dict= read_file(train_file)
             self.fl = list(self.file_dict.keys())
         elif self.split == 'TEST':
-            test_file = os.path.join(META_PATH, 'autotagging_moodtheme-test.tsv')
+            test_file = os.path.join(META_PATH, 'autotagging_top50tags-test.tsv')
             self.file_dict= read_file(test_file)
             self.fl = list(self.file_dict.keys())
         else:
@@ -56,7 +56,7 @@ class AudioFolder(data.Dataset):
     def get_npy(self, index):
         jmid = self.fl[index]
         filename = self.file_dict[jmid]['path']
-        npy_path = os.path.join(self.root, filename.split("/")[-1])
+        npy_path = os.path.join(self.root, filename)
         npy = np.load(npy_path, mmap_mode='r')
         random_idx = int(np.floor(np.random.random(1) * (len(npy)-self.input_length)))
         npy = np.array(npy[random_idx:random_idx+self.input_length])
