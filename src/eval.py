@@ -19,7 +19,7 @@ def tags(dataset):
     if dataset == "jamendo":
         return jamendo_tags
     elif dataset == "jamendo-mood":
-        return jamendo_tags
+        return jamendomood_tags
     elif dataset == "msd":
         return msd_tags
     elif dataset == "mtat":
