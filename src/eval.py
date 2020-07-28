@@ -27,13 +27,13 @@ def tags(dataset):
     else:
         raise Exception("Invalid dataset")
 
-def get_model(model_type):
+def get_model(model_type,dataset):
     if model_type == 'fcn':
         input_length = 29 * 16000
         model = Model.FCN()
     elif model_type == 'musicnn':
         input_length = 3 * 16000
-        model = Model.Musicnn(dataset=self.dataset)
+        model = Model.Musicnn()
     elif model_type == 'crnn':
         input_length = 29 * 16000
         model = Model.CRNN()
