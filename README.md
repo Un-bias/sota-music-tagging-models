@@ -9,13 +9,6 @@ PyTorch implementation of state-of-the-art music tagging models :notes:
 
 -- Minz Won, Andres Ferraro, Dmitry Bogdanov, and Xavier Serra
 
-
-**TL;DR**
-
-- If your dataset is relatively small: take advantage of domain knowledge using Musicnn.
-- If you want a simple but the best performing model: Short-chunk CNN with Residual connection (so-called *vgg*-ish model with a small receptive field)
-- If you want the best performance with generalization ability: Harmonic CNN
-
 ## Available Models
 - **FCN** : Automatic Tagging using Deep Convolutional Neural Networks, Choi et al., 2016 [[arxiv](https://arxiv.org/abs/1606.00298)]
 - **Musicnn** : End-to-end Learning for Music Audio Tagging at Scale, Pons et al., 2018 [[arxiv](https://arxiv.org/abs/1711.02520)]
@@ -34,7 +27,6 @@ conda create -n YOUR_ENV_NAME python=3.7
 conda activate YOUR_ENV_NAME
 pip install -r requirements.txt
 ```
-
 
 ## Preprocessing
 STFT will be done on-the-fly. You only need to read and resample audio files into `.npy` files. 
@@ -62,6 +54,10 @@ Options
 '--data_path', type=str, default='./data'
 '--log_step', type=int, default=20
 ```
+
+## Tensorboard
+
+`tensorboard --logdir=PATH_TO_RUNS --host torch`
 
 ## Evaluation
 
