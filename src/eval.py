@@ -27,7 +27,7 @@ def tags(dataset):
     else:
         raise Exception("Invalid dataset")
 
-def get_model(model_type,dataset):
+def get_model(model_type):
     if model_type == 'fcn':
         input_length = 29 * 16000
         model = Model.FCN()
