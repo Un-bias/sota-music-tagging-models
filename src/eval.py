@@ -116,6 +116,36 @@ def predict(model_type,fn, batch_size, model_load_path):
     prediction = np.array(out).mean(axis=0)
     return prediction
 
+def predict_time_series(fn, batch_size, model_load_path):
+    model, input_length = build_model('musicnn',model_load_path)
+    model = model.eval()
+    est_array = []
+    gt_array = []
+    losses = []
+    reconst_loss = nn.BCELoss()
+
+    x = get_tensor(fn, input_length, batch_size)
+
+    # forward
+    x = to_var(x)
+    out = model(x)
+    out = out.detach().cpu()
+
+    # estimate
+    prediction = np.array(out)
+    return prediction
+
+def run_time_series(input_file, dataset='mtat',batch_size=16):
+  model_type='musicnn'
+  model_load_path=f'../models/{dataset}/{model_type}/best_model.pth'
+
+  #load_remote_file(handle, audio_file_path)
+  normalize(input_file,"temp.mp3")
+  prediction = predict_time_series("temp.mp3", batch_size, model_load_path).tolist()
+  
+  return pd.DataFrame(prediction,columns=tags(dataset))
+
+
 def run(input_file, dataset='mtat', model_type='fcn',batch_size=16):
   # dataset choices=['mtat', 'msd', 'jamendo', 'jamendo-mood']
   # model_type choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'boc', 'boc_res', 'attention', 'hcnn']
