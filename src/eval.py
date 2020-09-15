@@ -24,13 +24,13 @@ def tags(dataset):
     else:
         raise Exception("Invalid dataset")
 
-def get_model(model_type):
+def get_model(model_type,dataset):
     if model_type == 'fcn':
         input_length = 29 * 16000
         model = Model.FCN()
     elif model_type == 'musicnn':
         input_length = 3 * 16000
-        model = Model.Musicnn(dataset=self.dataset)
+        model = Model.Musicnn(dataset=dataset)
     elif model_type == 'crnn':
         input_length = 29 * 16000
         model = Model.CRNN()
@@ -62,8 +62,8 @@ def load(model, filename):
         model.spec.mel_scale.fb = S['spec.mel_scale.fb']
     model.load_state_dict(S)
 
-def build_model(model_type,model_load_path):
-    model, input_length = get_model(model_type)
+def build_model(model_type,model_load_path,dataset):
+    model, input_length = get_model(model_type,dataset)
     # cuda
     model.cuda()
     # load model
@@ -94,8 +94,8 @@ def get_tensor(fn, input_length, batch_size):
         x[i] = torch.Tensor(raw[i*hop:i*hop+input_length]).unsqueeze(0)
     return x
 
-def predict(model_type,fn, batch_size, model_load_path):
-    model, input_length = build_model(model_type,model_load_path)
+def predict(model_type,fn, batch_size, model_load_path,dataset):
+    model, input_length = build_model(model_type,model_load_path,dataset)
     model = model.eval()
     est_array = []
     gt_array = []
@@ -120,7 +120,7 @@ def run(input_file, dataset='mtat', model_type='fcn',batch_size=16):
 
   #load_remote_file(handle, audio_file_path)
   normalize(input_file,"temp.mp3")
-  prediction = predict(model_type,"temp.mp3", batch_size, model_load_path)
+  prediction = predict(model_type,"temp.mp3", batch_size, model_load_path,dataset)
   
   return pd.DataFrame([list(prediction)],columns=tags(dataset))
 
