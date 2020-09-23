@@ -2,4 +2,4 @@
 __pycache__/
 training/models/
 training/runs/
-
+**/.ipynb_checkpoints/
