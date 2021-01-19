@@ -31,7 +31,11 @@ pip install -r requirements.txt
 ## Preprocessing
 STFT will be done on-the-fly. You only need to read and resample audio files into `.npy` files. 
 
-`python -u src/preprocessing.py run data`
+- `python -u src/preprocessing.py run data_folder`
+
+Below a more concrete example
+ 
+- `python -W ignore -u src/preprocessing.py run /home/jupyter/models/jamendo-mood/dataset-audios/catalog_clean/`
 
 ## Training
 
