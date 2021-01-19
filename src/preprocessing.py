@@ -23,7 +23,7 @@ class Processor:
         def iterate(self, data_path):
                 self.create_paths()
                 self.data_path = data_path
-                self.files = list(glob.iglob(data_path + '**/*.mp3', recursive=True))
+                self.files = list(glob.iglob(data_path + '**/*.mp3', recursive=True)) + list(glob.iglob(data_path + '**/*.m4a', recursive=True))
                 p = Pool(multiprocessing.cpu_count())
                 list(tqdm.tqdm(p.imap(self.process_file,self.files),total=len(self.files)))
 
