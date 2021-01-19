@@ -16,6 +16,8 @@ def main(config):
         from data_loader.jamendo_loader import get_audio_loader
     elif config.dataset == 'jamendo-mood':
         from data_loader.jamendomood_loader import get_audio_loader
+    elif config.dataset == 'jamendo-mood':
+        from data_loader.genres_loader import get_audio_loader
 
     # audio length
     if config.model_type == 'fcn' or config.model_type == 'crnn':
@@ -43,7 +45,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--num_workers', type=int, default=0)
-    parser.add_argument('--dataset', type=str, default='jamendo-mood', choices=['mtat', 'msd', 'jamendo','jamendo-mood'])
+    parser.add_argument('--dataset', type=str, default='genres', choices=['genres', 'mtat', 'msd', 'jamendo','jamendo-mood'])
     parser.add_argument('--model_type', type=str, default='musicnn',
 						choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'short', 'short_res', 'attention', 'hcnn'])
     parser.add_argument('--n_epochs', type=int, default=200)

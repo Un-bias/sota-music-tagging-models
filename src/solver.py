@@ -34,9 +34,9 @@ skip_files = set(['TRAIISZ128F42684BB', 'TRAONEQ128F42A8AB7', 'TRADRNH128E078451
                   'TRBGJIZ128F92E42BC', 'TRVWNOH128E0788B78', 'TRCGBRK128F146A901'])
 
 TAGS = ['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrument---synthesizer', 'genre---atmospheric', 'genre---indie', 'instrument---electricpiano', 'genre---newage', 'instrument---strings', 'instrument---drums', 'instrument---drummachine', 'genre---techno', 'instrument---guitar', 'genre---alternative', 'genre---easylistening', 'genre---instrumentalpop', 'genre---chillout', 'genre---metal', 'mood/theme---happy', 'genre---lounge', 'genre---reggae', 'genre---popfolk', 'genre---orchestral', 'instrument---acousticguitar', 'genre---poprock', 'instrument---piano', 'genre---trance', 'genre---dance', 'instrument---electricguitar', 'genre---soundtrack', 'genre---house', 'genre---hiphop', 'genre---classical', 'mood/theme---energetic', 'genre---electronic', 'genre---world', 'genre---experimental', 'instrument---violin', 'genre---folk', 'mood/theme---emotional', 'instrument---voice', 'instrument---keyboard', 'genre---pop', 'instrument---bass', 'instrument---computer', 'mood/theme---film', 'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing']
-
-
 TAGS_MOOD = ["mood/theme---action", "mood/theme---adventure", "mood/theme---advertising", "mood/theme---background", "mood/theme---ballad", "mood/theme---calm", "mood/theme---children", "mood/theme---christmas", "mood/theme---commercial", "mood/theme---cool", "mood/theme---corporate", "mood/theme---dark", "mood/theme---deep", "mood/theme---documentary", "mood/theme---drama", "mood/theme---dramatic", "mood/theme---dream", "mood/theme---emotional", "mood/theme---energetic", "mood/theme---epic", "mood/theme---fast", "mood/theme---film", "mood/theme---fun", "mood/theme---funny", "mood/theme---game", "mood/theme---groovy", "mood/theme---happy", "mood/theme---heavy", "mood/theme---holiday", "mood/theme---hopeful", "mood/theme---inspiring", "mood/theme---love", "mood/theme---meditative", "mood/theme---melancholic", "mood/theme---melodic", "mood/theme---motivational", "mood/theme---movie", "mood/theme---nature", "mood/theme---party", "mood/theme---positive", "mood/theme---powerful", "mood/theme---relaxing", "mood/theme---retro", "mood/theme---romantic", "mood/theme---sad", "mood/theme---sexy", "mood/theme---slow", "mood/theme---soft", "mood/theme---soundscape", "mood/theme---space", "mood/theme---sport", "mood/theme---summer", "mood/theme---trailer", "mood/theme---travel", "mood/theme---upbeat", "mood/theme---uplifting"]
+genres_tags = ['R&B/SOUL', 'INDIE POP', 'ALTERNATIVE FOLK', 'LATIN URBAN', 'ALTERNATIVE', 'DANCE', 'JAZZ', 'POP', 'LATINO', 'HIP-HOP/RAP', 'METAL', 'ROCK', 'AUTHOR-PERFORMER', 'ELECTRONIC', 'ROCK INDIE', 'HOUSE', 'CHRISTIAN & GOSPEL', 'INDEPENDENT ROCK', 'VOCAL', 'SERTANEJO', 'LATIN POP', 'DOWNTEMPO', 'SINGER/SONGWRITER', 'NEO-SOUL', 'BRAZILIAN', 'SPANISH POP', 'K-POP', 'LATIN JAZZ', 'TECHNO', 'INTERNATIONAL POP', 'COUNTRY', 'HIP HOP / RAP', 'BLUES', 'POP IN SPANISH', 'CLASSICAL', 'SONG WRITERS', 'INDIE-ROCK', 'SINGER-SONGWRITER', 'R & B / SOUL', 'FOLK', 'IDM/EXPERIMENTAL', 'INDIE ROCK', 'SOUL', 'CHRISTIAN AND GOSPEL', 'CONTEMPORARY JAZZ', 'SOUNDTRACKS', 'SOUNDTRACK', 'DANCE MUSIC', 'LATIN AMERICAN', 'FUSION', 'LOUNGE', 'MEXICAN MUSIC', 'NEW WAVE', 'PAGODA', 'AMBIENT', 'ELECTONIC MUSIC', "JUNGLE/DRUM'N'BASS", 'GOSPEL', 'RELIGIOUS MUSIC', 'HIPHOP/RAP', 'PERFORMER / COMPOSER', 'ALTERNATIVE FOLK MUSIC', 'LATIN', 'ELECTRONIC MUSIC', 'BASS', 'FOLK ALTERNATIVO', 'SALSA AND TROPICS', 'URBAN LATIN', 'URBAN LATINO-AMERICANA', 'TRANCE', 'AVANT-GARDE JAZZ', 'TROPICAL MUSIC', 'INSTRUMENTAL', 'CHRISTMAS', 'WORLD', 'PUNK', 'FUNK', 'FITNESS & WORKOUT', 'FUNK PARTY', 'WRAP', 'WORLD MUSIC', 'DUBSTEP', 'CHRISTIAN MUSIC', 'PSYCHEDELIC', 'ALTERNATIVE RAP', 'JAZZ CROSSOVER', 'R&B/SAO LINGLE', 'CONTEMPORARY FOLK', 'REGGAE', 'SALSA AND TROPICAL', 'VOCAL MUSIC', 'INDEPENDENT POP', 'GARAGE', 'AFROBEATS', 'INDIE-POP', 'FOLKROCK', 'LATIN MUSIC', 'LINING', 'OLD SCHOOL RAP', 'FRENCH POP', 'VOCAL JAZZ', 'BIG BAND', 'ALTERNATIVE - PEOPLE', 'WORLDWIDE', 'MAINSTREAM JAZZ', 'WEST COAST RAP', 'J-POP', 'POP/ROCK', 'CONTEMPORARY COUNTRY', 'MODERN ERA', 'JAPAN', 'ORIGINAL BANDS', 'HARD ROCK', 'DISCO', 'URBAN LATIN MUSIC', 'ALTERNATIVE AND ROCK IN SPANISH', 'MUSIC', 'TRADITIONAL FOLK MUSIC', 'MOTOWN', 'ROCK: INDEPENDENT', 'AFRO-POP', 'IDM / EXPERIMENTAL', 'CONTEMPORARY R&B', 'BREAKBEAT', 'LATIN RAP', 'POP INDIE', 'FOLK-ROCK', 'ADULT CONTEMPORARY', 'DABSTEP', 'CLASSIC', 'HIP HOP', 'LOCK', 'GOTH ROCK', 'ADULT ALTERNATIVE', 'HOLIDAY', 'LATINA', 'DIRTY SOUTH', 'AMERICANA', 'EASY LISTENING', 'ROOTS ROCK', 'SMOOTH JAZZ', 'LATIN AMERICAN URBAN MUSIC', 'SINGER-SONGWRITERS', 'SPOKEN WORD', 'DUB', 'SERTANELLO', 'CONTEMPORARY PERFORMER / COMPOSER', 'OLDIES', 'CONTEMPORARY ERA', 'HIPHOP', 'POP MUSIC IN SPANISH', 'MODERN DANCEHALL', 'BRITPOP', 'NEOSOUL', 'NEO SOUL', "CHILDREN'S MUSIC", 'POP PUNK', 'LATIN METROPOLITAN MUSIC', 'INDIAN POP', 'BEL CANTO', 'SOUND BAND', 'BLUES-ROCK', 'CONTEMPORARY SINGER/SONGWRITER', 'SEOUL', '=MZGENRE.MUSIC.ALTERNATIVE=', 'ORIGINAL SOUND TRACK', 'FESTIVAL', 'ROCK & ROLL', 'IT WAS MODERN', 'TRADITIONAL FOLK', 'ORIGINAL SCORE', 'JAZZ VOCAL', 'CCM', 'AMERICAN TRADITIONAL ROCK', 'R&B CONTEMPORAIN', 'ELECTRONICALLY', 'CUTTING EDGE JAZZ', 'GRUNGE', 'HARD BOP', 'KOREAN INDIE MUSIC', 'COLLEGE ROCK', 'BOLLYWOOD', 'SINGING AS A SINGER', 'INDUSTRIAL', 'LENSES', 'UK HIP-HOP', 'NEW AGE', 'SLOW SHOT', 'INSPIRATIONAL', '=DANCE=', 'AMERICAN TRAD ROCK', 'CLASSICAL CROSSOVER', 'LATIN WRAP', 'BRAZILIAN MUSIC', 'CONTEMPORARY COUNTRY MUSIC', 'SPANISH POP MUSIC', 'TRADITIONAL AMERICAN ROCK', 'NOW SOUL', 'EAST COAST RAP', 'UNDERGROUND RAP', 'TURKISH', 'AFRO HOUSE', 'CONTRIBUTING AUTHORS', 'SURF', 'CONTEMPORARY SINGER-SONGWRITER', 'ALTERNATIVE - RAP']
+
 
 def read_file(tsv_file):
     tracks = {}
@@ -104,7 +104,11 @@ class Solver(object):
             self.file_dict= read_file(train_file)
             self.valid_list= list(read_file(train_file).keys())
             self.mlb = LabelBinarizer().fit(TAGS_MOOD)
-
+        if self.dataset == 'genres':
+            train_file = os.path.join('./../split/genres', 'validation.tsv') # why validation instead of train?
+            self.file_dict= read_file(train_file)
+            self.valid_list= list(read_file(train_file).keys())
+            self.mlb = LabelBinarizer().fit(genres_tags)
 
 
     def get_model(self):
@@ -241,7 +245,7 @@ class Solver(object):
         elif self.dataset == 'jamendo':
             filename = self.file_dict[fn]['path']
             npy_path = os.path.join(self.data_path, filename)
-        elif self.dataset == 'jamendo-mood':
+        elif self.dataset in ['jamendo-mood', 'genres']:
             filename = self.file_dict[fn]['path']
             npy_path = os.path.join(self.data_path, filename.split("/")[-1])
         raw = np.load(npy_path, mmap_mode='r')
@@ -293,9 +297,7 @@ class Solver(object):
                 fn = line
                 if fn.decode() in skip_files:
                     continue
-            elif self.dataset == 'jamendo':
-                fn = line
-            elif self.dataset == 'jamendo-mood':
+            elif self.dataset in ['jamendo', 'jamendo-mood','genres']:
                 fn = line
 
             # load and split
@@ -306,9 +308,7 @@ class Solver(object):
                 ground_truth = self.binary[int(ix)]
             elif self.dataset == 'msd':
                 ground_truth = self.id2tag[fn].flatten()
-            elif self.dataset == 'jamendo':
-                ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
-            elif self.dataset == 'jamendo-mood':
+            elif self.dataset in ['jamendo', 'jamendo-mood', 'genres']:
                 ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
 
 
