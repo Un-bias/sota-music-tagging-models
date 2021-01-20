@@ -16,7 +16,7 @@ def main(config):
         from data_loader.jamendo_loader import get_audio_loader
     elif config.dataset == 'jamendo-mood':
         from data_loader.jamendomood_loader import get_audio_loader
-    elif config.dataset == 'jamendo-mood':
+    elif config.dataset == 'genres':
         from data_loader.genres_loader import get_audio_loader
 
     # audio length
