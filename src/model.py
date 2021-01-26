@@ -22,7 +22,7 @@ class FCN(nn.Module):
                 f_min=0.0,
                 f_max=8000.0,
                 n_mels=96,
-                n_class=102):
+                n_class=32):
         super(FCN, self).__init__()
 
         # Spectrogram
@@ -81,7 +81,7 @@ class Musicnn(nn.Module):
                 f_min=0.0,
                 f_max=8000.0,
                 n_mels=96,
-                n_class=102,
+                n_class=32,
                 dataset='mtat'):
         super(Musicnn, self).__init__()
 
@@ -162,7 +162,7 @@ class CRNN(nn.Module):
                 f_min=0.0,
                 f_max=8000.0,
                 n_mels=96,
-                n_class=102):
+                n_class=32):
         super(CRNN, self).__init__()
 
         # Spectrogram
@@ -221,7 +221,7 @@ class SampleCNN(nn.Module):
     Sample-level CNN.
     '''
     def __init__(self,
-                 n_class=102):
+                 n_class=32):
         super(SampleCNN, self).__init__()
         self.layer1 = Conv_1d(1, 128, shape=3, stride=3, pooling=1)
         self.layer2 = Conv_1d(128, 128, shape=3, stride=1, pooling=3)
@@ -264,7 +264,7 @@ class SampleCNNSE(nn.Module):
     Sample-level CNN + residual connections + squeeze & excitation.
     '''
     def __init__(self,
-                 n_class=102):
+                 n_class=32):
         super(SampleCNNSE, self).__init__()
         self.layer1 = ResSE_1d(1, 128, shape=3, stride=3, pooling=1)
         self.layer2 = ResSE_1d(128, 128, shape=3, stride=1, pooling=3)
@@ -316,7 +316,7 @@ class ShortChunkCNN(nn.Module):
                 f_min=0.0,
                 f_max=8000.0,
                 n_mels=128,
-                n_class=102):
+                n_class=32):
         super(ShortChunkCNN, self).__init__()
 
         # Spectrogram
@@ -388,7 +388,7 @@ class ShortChunkCNN_Res(nn.Module):
                 f_min=0.0,
                 f_max=8000.0,
                 n_mels=128,
-                n_class=102):
+                n_class=32):
         super(ShortChunkCNN_Res, self).__init__()
 
         # Spectrogram
@@ -462,7 +462,7 @@ class CNNSA(nn.Module):
                 f_min=0.0,
                 f_max=8000.0,
                 n_mels=128,
-                n_class=102):
+                n_class=32):
         super(CNNSA, self).__init__()
 
         # Spectrogram
@@ -488,7 +488,7 @@ class CNNSA(nn.Module):
                                  hidden_size=256,
                                  num_hidden_layers=2,
                                  num_attention_heads=8,
-                                 intermediate_size=1024,
+                                 intermediate_size=324,
                                  hidden_act="gelu",
                                  hidden_dropout_prob=0.4,
                                  max_position_embeddings=700,
@@ -561,7 +561,7 @@ class HarmonicCNN(nn.Module):
                 f_min=0.0,
                 f_max=8000.0,
                 n_mels=128,
-                n_class=102,
+                n_class=32,
                 n_harmonic=6,
                 semitone_scale=2,
                 learn_bw='only_Q'):
