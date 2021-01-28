@@ -47,8 +47,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--num_workers', type=int, default=0)
-    parser.add_argument('--dataset', type=str, default='genres', choices=['genres', 'highlow', 'mtat', 'msd', 'jamendo','jamendo-mood'])
-    parser.add_argument('--model_type', type=str, default='musicnn',
+    parser.add_argument('--dataset', type=str, default='highlow', choices=['genres', 'highlow', 'mtat', 'msd', 'jamendo','jamendo-mood'])
+    parser.add_argument('--model_type', type=str, default='hcnn',
 						choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'short', 'short_res', 'attention', 'hcnn'])
     parser.add_argument('--n_epochs', type=int, default=200)
     parser.add_argument('--batch_size', type=int, default=16)

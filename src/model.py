@@ -561,7 +561,7 @@ class HarmonicCNN(nn.Module):
                 f_min=0.0,
                 f_max=8000.0,
                 n_mels=128,
-                n_class=2,
+                n_class=1,
                 n_harmonic=6,
                 semitone_scale=2,
                 learn_bw='only_Q'):
