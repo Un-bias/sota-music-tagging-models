@@ -32,6 +32,7 @@ import model as Model
 
 TAGS = ['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrument---synthesizer', 'genre---atmospheric', 'genre---indie', 'instrument---electricpiano', 'genre---newage', 'instrument---strings', 'instrument---drums', 'instrument---drummachine', 'genre---techno', 'instrument---guitar', 'genre---alternative', 'genre---easylistening', 'genre---instrumentalpop', 'genre---chillout', 'genre---metal', 'mood/theme---happy', 'genre---lounge', 'genre---reggae', 'genre---popfolk', 'genre---orchestral', 'instrument---acousticguitar', 'genre---poprock', 'instrument---piano', 'genre---trance', 'genre---dance', 'instrument---electricguitar', 'genre---soundtrack', 'genre---house', 'genre---hiphop', 'genre---classical', 'mood/theme---energetic', 'genre---electronic', 'genre---world', 'genre---experimental', 'instrument---violin', 'genre---folk', 'mood/theme---emotional', 'instrument---voice', 'instrument---keyboard', 'genre---pop', 'instrument---bass', 'instrument---computer', 'mood/theme---film', 'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing']
 genres_tags = ['BRAZILLIAN',  'R&B/SOUL',  'TRANCE',  'INDIE ROCK',  'CHRISTMAS',  'REGGAE',  'INDIE POP',  'INSTRUMENTAL',  'LATINO',  'CHRISTIAN & GOSPEL',  'WORLD',  'DUBSTEP',  'J-POP',  'HOUSE',  'ALTERNATIVE',  'COUNTRY',  'AMBIENT',  'LATIN POP',  'JAZZ',  'SOUNDTRACKS',  'URBAN LATIN',  'ROCK',  'SINGER-SONGWRITER',  'DOWNTEMPO',  'TECHNO',  'HIPHOP/RAP',  'POP',  'IDM/EXPERIMENTAL',  'DANCE',  'FOLK',  'METAL',  'ELECTRONIC']
+highlow_tags = ['low_performing', 'high_performing']
 
 def read_file(tsv_file):
     tracks = {}
@@ -142,6 +143,12 @@ class Predict(object):
             self.test_list= list(self.file_dict.keys())
             self.mlb = LabelBinarizer().fit(genres_tags)
 
+        if self.dataset == 'highlow':
+            test_file = os.path.join('./../split/highlow', 'test.tsv')
+            self.file_dict= read_file(test_file)
+            self.test_list= list(self.file_dict.keys())
+            self.mlb = LabelBinarizer().fit(highlow_tags)
+
             
     def load(self, filename):
         S = torch.load(filename)
@@ -160,7 +167,7 @@ class Predict(object):
             msid = fn.decode()
             filename = '{}/{}/{}/{}.npy'.format(msid[2], msid[3], msid[4], msid)
             npy_path = os.path.join(self.data_path, filename)
-        elif self.dataset in ['jamendo', 'jamendo-mood', 'genres']:
+        elif self.dataset in ['jamendo', 'jamendo-mood', 'genres', 'highlow']:
             filename = self.file_dict[fn]['path']
             npy_path = os.path.join(self.data_path, filename)
         raw = np.load(npy_path, mmap_mode='r')
@@ -272,7 +279,7 @@ class Predict(object):
                 fn = line
                 if fn.decode() in skip_files:
                     continue
-            elif self.dataset in ['jamendo','jamendo-mood','genres']:
+            elif self.dataset in ['jamendo','jamendo-mood','genres', 'highlow']:
                 fn = line
 
             # load and split
@@ -283,7 +290,7 @@ class Predict(object):
                 ground_truth = self.binary[int(ix)]
             elif self.dataset == 'msd':
                 ground_truth = self.id2tag[fn].flatten()
-            elif self.dataset in ['jamendo', 'jamendo-mood', 'genres']:
+            elif self.dataset in ['jamendo', 'jamendo-mood', 'genres', 'highlow']:
                 ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
 
             # forward
@@ -310,7 +317,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--num_workers', type=int, default=0)
-    parser.add_argument('--dataset', type=str, default='genres', choices=['genres', 'mtat', 'msd', 'jamendo','jamendo-mood'])
+    parser.add_argument('--dataset', type=str, default='highlow', choices=['highlow', 'genres', 'mtat', 'msd', 'jamendo','jamendo-mood'])
     parser.add_argument('--model_type', type=str, default='fcn',
                         choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'short', 'short_res', 'attention', 'hcnn'])
     parser.add_argument('--batch_size', type=int, default=16)

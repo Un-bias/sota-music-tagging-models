@@ -14,6 +14,7 @@ jamendo_tags = ['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrum
 msd_tags = ["rock", "pop", "alternative", "indie", "electronic", "female vocalists", "dance", "00s", "alternative rock", "jazz", "beautiful", "metal", "chillout", "male vocalists", "classic rock", "soul", "indie rock", "Mellow", "electronica", "80s", "folk", "90s", "chill", "instrumental", "punk", "oldies", "blues", "hard rock", "ambient", "acoustic", "experimental", "female vocalist", "guitar", "Hip-Hop", "70s", "party", "country", "easy listening", "sexy", "catchy", "funk", "electro", "heavy metal", "Progressive rock", "60s", "rnb", "indie pop", "sad", "House", "happy"]
 mtat_tags = ['guitar', 'classical', 'slow', 'techno', 'strings', 'drums', 'electronic', 'rock', 'fast', 'piano', 'ambient', 'beat', 'violin', 'vocal', 'synth', 'female', 'indian', 'opera', 'male', 'singing', 'vocals', 'no vocals', 'harpsichord', 'loud', 'quiet', 'flute', 'woman', 'male vocal', 'no vocal', 'pop', 'soft', 'sitar', 'solo', 'man', 'classic', 'choir', 'voice', 'new age', 'dance', 'male voice', 'female vocal', 'beats', 'harp', 'cello', 'no voice', 'weird', 'country', 'metal', 'female voice', 'choral']
 genres_tags = ['BRAZILLIAN',  'R&B/SOUL',  'TRANCE',  'INDIE ROCK',  'CHRISTMAS',  'REGGAE',  'INDIE POP',  'INSTRUMENTAL',  'LATINO',  'CHRISTIAN & GOSPEL',  'WORLD',  'DUBSTEP',  'J-POP',  'HOUSE',  'ALTERNATIVE',  'COUNTRY',  'AMBIENT',  'LATIN POP',  'JAZZ',  'SOUNDTRACKS',  'URBAN LATIN',  'ROCK',  'SINGER-SONGWRITER',  'DOWNTEMPO',  'TECHNO',  'HIPHOP/RAP',  'POP',  'IDM/EXPERIMENTAL',  'DANCE',  'FOLK',  'METAL',  'ELECTRONIC']
+highlow_tags = ['low_performing', 'high_performing']
 
 def tags(dataset):
     if dataset == "jamendo":
@@ -26,6 +27,8 @@ def tags(dataset):
         return mtat_tags
     elif dataset == "genres":
         return genres_tags
+    elif dataset == "highlow":
+        return highlow_tags
     else:
         raise Exception("Invalid dataset")
 
@@ -149,7 +152,7 @@ def run_time_series(input_file, dataset='mtat',batch_size=16):
 
 
 def run(input_file, dataset='mtat', model_type='fcn',batch_size=16):
-  # dataset choices=['mtat', 'msd', 'jamendo', 'jamendo-mood', 'genres']
+  # dataset choices=['mtat', 'msd', 'jamendo', 'jamendo-mood', 'genres', 'highlow']
   # model_type choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'boc', 'boc_res', 'attention', 'hcnn']
   model_load_path=f'../models/{dataset}/{model_type}/best_model.pth'
 

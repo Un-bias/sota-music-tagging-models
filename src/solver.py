@@ -36,6 +36,7 @@ skip_files = set(['TRAIISZ128F42684BB', 'TRAONEQ128F42A8AB7', 'TRADRNH128E078451
 TAGS = ['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrument---synthesizer', 'genre---atmospheric', 'genre---indie', 'instrument---electricpiano', 'genre---newage', 'instrument---strings', 'instrument---drums', 'instrument---drummachine', 'genre---techno', 'instrument---guitar', 'genre---alternative', 'genre---easylistening', 'genre---instrumentalpop', 'genre---chillout', 'genre---metal', 'mood/theme---happy', 'genre---lounge', 'genre---reggae', 'genre---popfolk', 'genre---orchestral', 'instrument---acousticguitar', 'genre---poprock', 'instrument---piano', 'genre---trance', 'genre---dance', 'instrument---electricguitar', 'genre---soundtrack', 'genre---house', 'genre---hiphop', 'genre---classical', 'mood/theme---energetic', 'genre---electronic', 'genre---world', 'genre---experimental', 'instrument---violin', 'genre---folk', 'mood/theme---emotional', 'instrument---voice', 'instrument---keyboard', 'genre---pop', 'instrument---bass', 'instrument---computer', 'mood/theme---film', 'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing']
 TAGS_MOOD = ["mood/theme---action", "mood/theme---adventure", "mood/theme---advertising", "mood/theme---background", "mood/theme---ballad", "mood/theme---calm", "mood/theme---children", "mood/theme---christmas", "mood/theme---commercial", "mood/theme---cool", "mood/theme---corporate", "mood/theme---dark", "mood/theme---deep", "mood/theme---documentary", "mood/theme---drama", "mood/theme---dramatic", "mood/theme---dream", "mood/theme---emotional", "mood/theme---energetic", "mood/theme---epic", "mood/theme---fast", "mood/theme---film", "mood/theme---fun", "mood/theme---funny", "mood/theme---game", "mood/theme---groovy", "mood/theme---happy", "mood/theme---heavy", "mood/theme---holiday", "mood/theme---hopeful", "mood/theme---inspiring", "mood/theme---love", "mood/theme---meditative", "mood/theme---melancholic", "mood/theme---melodic", "mood/theme---motivational", "mood/theme---movie", "mood/theme---nature", "mood/theme---party", "mood/theme---positive", "mood/theme---powerful", "mood/theme---relaxing", "mood/theme---retro", "mood/theme---romantic", "mood/theme---sad", "mood/theme---sexy", "mood/theme---slow", "mood/theme---soft", "mood/theme---soundscape", "mood/theme---space", "mood/theme---sport", "mood/theme---summer", "mood/theme---trailer", "mood/theme---travel", "mood/theme---upbeat", "mood/theme---uplifting"]
 genres_tags = ['BRAZILLIAN',  'R&B/SOUL',  'TRANCE',  'INDIE ROCK',  'CHRISTMAS',  'REGGAE',  'INDIE POP',  'INSTRUMENTAL',  'LATINO',  'CHRISTIAN & GOSPEL',  'WORLD',  'DUBSTEP',  'J-POP',  'HOUSE',  'ALTERNATIVE',  'COUNTRY',  'AMBIENT',  'LATIN POP',  'JAZZ',  'SOUNDTRACKS',  'URBAN LATIN',  'ROCK',  'SINGER-SONGWRITER',  'DOWNTEMPO',  'TECHNO',  'HIPHOP/RAP',  'POP',  'IDM/EXPERIMENTAL',  'DANCE',  'FOLK',  'METAL',  'ELECTRONIC']
+highlow_tags = ['low_performing', 'high_performing']
 
 
 def read_file(tsv_file):
@@ -109,6 +110,11 @@ class Solver(object):
             self.file_dict= read_file(train_file)
             self.valid_list= list(read_file(train_file).keys())
             self.mlb = LabelBinarizer().fit(genres_tags)
+        if self.dataset == 'highlow':
+            train_file = os.path.join('./../split/highlow', 'validation.tsv') # why validation instead of train?
+            self.file_dict= read_file(train_file)
+            self.valid_list= list(read_file(train_file).keys())
+            self.mlb = LabelBinarizer().fit(highlow_tags)
 
 
     def get_model(self):
@@ -245,7 +251,7 @@ class Solver(object):
         elif self.dataset == 'jamendo':
             filename = self.file_dict[fn]['path']
             npy_path = os.path.join(self.data_path, filename)
-        elif self.dataset in ['jamendo-mood', 'genres']:
+        elif self.dataset in ['jamendo-mood', 'genres', 'highlow']:
             filename = self.file_dict[fn]['path']
             npy_path = os.path.join(self.data_path, filename.split("/")[-1])
         raw = np.load(npy_path, mmap_mode='r')
@@ -303,7 +309,7 @@ class Solver(object):
                 fn = line
                 if fn.decode() in skip_files:
                     continue
-            elif self.dataset in ['jamendo', 'jamendo-mood','genres']:
+            elif self.dataset in ['jamendo', 'jamendo-mood','genres', 'highlow']:
                 fn = line
 
             # load and split
@@ -314,7 +320,7 @@ class Solver(object):
                 ground_truth = self.binary[int(ix)]
             elif self.dataset == 'msd':
                 ground_truth = self.id2tag[fn].flatten()
-            elif self.dataset in ['jamendo', 'jamendo-mood', 'genres']:
+            elif self.dataset in ['jamendo', 'jamendo-mood', 'genres', 'highlow']:
                 ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
 
 
