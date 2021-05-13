@@ -8,6 +8,9 @@ import model as Model
 import numpy as np
 import pandas as pd
 import os
+#os.environ['CUDA_VISIBLE_DEVICES'] = ""
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#device = torch.device("cpu")
 
 jamendo_tags = ['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrument---synthesizer', 'genre---atmospheric', 'genre---indie', 'instrument---electricpiano', 'genre---newage', 'instrument---strings', 'instrument---drums', 'instrument---drummachine', 'genre---techno', 'instrument---guitar', 'genre---alternative', 'genre---easylistening', 'genre---instrumentalpop', 'genre---chillout', 'genre---metal', 'mood/theme---happy', 'genre---lounge', 'genre---reggae', 'genre---popfolk', 'genre---orchestral', 'instrument---acousticguitar', 'genre---poprock', 'instrument---piano', 'genre---trance', 'genre---dance', 'instrument---electricguitar', 'genre---soundtrack', 'genre---house', 'genre---hiphop', 'genre---classical', 'mood/theme---energetic', 'genre---electronic', 'genre---world', 'genre---experimental', 'instrument---violin', 'genre---folk', 'mood/theme---emotional', 'instrument---voice', 'instrument---keyboard', 'genre---pop', 'instrument---bass', 'instrument---computer', 'mood/theme---film', 'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing']
 msd_tags = ["rock", "pop", "alternative", "indie", "electronic", "female vocalists", "dance", "00s", "alternative rock", "jazz", "beautiful", "metal", "chillout", "male vocalists", "classic rock", "soul", "indie rock", "Mellow", "electronica", "80s", "folk", "90s", "chill", "instrumental", "punk", "oldies", "blues", "hard rock", "ambient", "acoustic", "experimental", "female vocalist", "guitar", "Hip-Hop", "70s", "party", "country", "easy listening", "sexy", "catchy", "funk", "electro", "heavy metal", "Progressive rock", "60s", "rnb", "indie pop", "sad", "House", "happy"]
@@ -57,7 +60,7 @@ def get_model(model_type,dataset):
     return model, input_length
 
 def load(model, filename):
-    S = torch.load(filename)
+    S = torch.load(filename, map_location=device)
     if 'spec.mel_scale.fb' in S.keys():
         model.spec.mel_scale.fb = S['spec.mel_scale.fb']
     model.load_state_dict(S)
@@ -65,14 +68,16 @@ def load(model, filename):
 def build_model(model_type,model_load_path,dataset):
     model, input_length = get_model(model_type,dataset)
     # cuda
-    model.cuda()
+    #model.cuda()
+    model.to(device)
     # load model
     load(model, model_load_path)
     return model, input_length
 
 def to_var(x):
     if torch.cuda.is_available():
-        x = x.cuda()
+        #x = x.cuda()
+        x = x.to(device) 
     return Variable(x)
 
 fs = 16000
